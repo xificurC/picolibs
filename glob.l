@@ -1,0 +1,16 @@
+(de dirs (Dir Hid)
+   (and (dir (or Dir ".") Hid)
+      (filter '((X) (not (and Hid (or (= "." X) (= ".." X))))) @)
+      (mapcar '((X) (if Dir (pack Dir "/" X) X)) @)
+      (filter '((X) (=T (car (info X)))) @) ) )
+
+(de dirRec (Dir Min Max Hid)
+   (default Dir "." Min 0 Max T)
+   (let (NewDirs (list Dir) N 0 )
+      (make
+         (when (=0 Min) (link Dir))
+         (while (and (<= N Max) NewDirs)
+            (inc 'N)
+            (setq NewDirs (mapcan '((X) (dirs X Hid)) NewDirs))
+            (when (<= Min N Max)
+               (chain NewDirs) ) ) ) ) )
